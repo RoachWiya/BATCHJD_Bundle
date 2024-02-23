@@ -1,0 +1,3 @@
+([('Batch_JD',
+   '/Users/rochanawiyathunge/BATCH_JD Bundle/dist/Batch_JD',
+   'EXECUTABLE')],)
