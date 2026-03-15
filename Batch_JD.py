@@ -1,5 +1,5 @@
 
-#Import Libraries 
+
 import nibabel as nib
 import os 
 import tkinter as tk
@@ -13,20 +13,20 @@ import matplotlib.backends.backend_tkagg as tkagg
 from scipy.spatial.distance import directed_hausdorff
 
 
-#Function to convert NIFTI or MGZ into .nii
+
 def mgz_convert(input_mgz,output_nii): 
     try:
-        # Load the MGZ file
+      
         img = nib.load(input_mgz)
     
-        # Save as NIfTI (.nii)
+     
         nib.save(img, output_nii)
         print("Conversion successful!")
     
     except Exception as e:
         print("Conversion failed:", e)
 
-# Function Converts File format Into nii.seg.nrrd File format 
+
 def nii_seg_convert(input_nii,output_nii_seg):   
     try:
         image = sitk.ReadImage(input_nii)
@@ -36,7 +36,6 @@ def nii_seg_convert(input_nii,output_nii_seg):
     except Exception as n: 
         print('Conversion Failed:', n)
 
-#Function to auto convert supported file types into nii.seg.nrrd 
 def convert_and_generate(input_file1,input_file2):
     supported_extensions = ['.nii.gz', '.mgz', '.nii', '.nii.seg.nrrd']
 
@@ -103,7 +102,6 @@ def convert_and_generate(input_file1,input_file2):
     return generated_files, subject_names
         
 
-#Function for Segmentation Extraction
 def extract_segmentation_info(file_path):
     try: 
         image = sitk.ReadImage(file_path)
@@ -112,7 +110,6 @@ def extract_segmentation_info(file_path):
     except Exception as f: 
         print(f'Error 02: Extraction failed for {file_path}: {f}')
 
-#Function to generate binary masks based on user input label
 def generate_binary_masks(seg_array, label): 
     try: 
         binary_mask = (seg_array == label).astype(np.uint)
@@ -127,13 +124,13 @@ def calculate_volume(mask):
 
     return volume
     
-#Dice Overlap Function 
+
 def dice_coeff(mask1,mask2): 
     intersection = np.logical_and(mask1,mask2)
     dice = 2.0 * np.sum(intersection) / (np.sum(mask1) + np.sum(mask2)) 
     return dice 
 
-#Jaccard Index Function
+
 def jaccard_index(mask1, mask2): 
     intersection = np.logical_and(mask1,mask2)
     union = np.logical_or(mask1,mask2)
@@ -147,7 +144,6 @@ def hausdorff_distance(mask1,mask2):
     distance1t2 = directed_hausdorff(points_mask1,points_mask2)[0]
     distance2t1 = directed_hausdorff(points_mask2,points_mask1)[0]
 
-    #returns maximum distance
     hausdorff = max(distance1t2,distance2t1)
 
     return hausdorff
@@ -159,8 +155,6 @@ def update_display(subject_name, dice, jaccard, vol_1, vol_2, hausdorff):
     display_panel.insert(tk.END, current_text + display_text)  # Append new content
     display_panel.see(tk.END)  # Scroll to the end
 
-# Global variables to store binary masks
-binary_mask_1 = None
 binary_mask_2 = None
 canvas = None
 ax1 = None
@@ -171,7 +165,7 @@ def display_3d_mask_plot():
 
     if binary_mask_1 is not None and binary_mask_2 is not None:
         if canvas is not None:
-            canvas.get_tk_widget().destroy()  # Destroy the existing canvas to update with a new one
+            canvas.get_tk_widget().destroy()  
 
         fig = plt.figure(figsize=(2, 1.5))
         ax1 = fig.add_subplot(121, projection='3d')
@@ -202,7 +196,6 @@ def display_3d_mask_plot():
  
 
 
-#Batch processing function
 def batch_processing(directory_path_1, directory_path_2, seg_label_1, seg_label_2):
     global binary_mask_1,binary_mask_2
 
@@ -213,14 +206,13 @@ def batch_processing(directory_path_1, directory_path_2, seg_label_1, seg_label_
         print("One or both directories are empty.")
         return
     
-    # Skip the first file (.DS_Store in this case) if it exists
+
     if len(files_1) > 0 and len(files_2) > 0:
         if files_1[0] == '.DS_Store':
             files_1 = files_1[1:]
         if files_2[0] == '.DS_Store':
             files_2 = files_2[1:]
 
-    # Ensure the number of files is the same in both directories 
     num_files = min(len(files_1), len(files_2))
 
     for i in range(num_files): 
